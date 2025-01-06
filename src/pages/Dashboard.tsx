@@ -11,6 +11,8 @@ import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type SettingType = {
   data?: File[];
@@ -133,13 +135,10 @@ export default function Dashboard() {
       {setting?.data && (
         <>
           <div className="my-4">
-            <label
-              htmlFor="sku"
-              className="block text-sm font-semibold text-gray-700"
-            >
-              Input SKU
-            </label>
-            <input
+            <Label htmlFor="sku" className="mt-2">
+              Enter SKU
+            </Label>
+            <Input
               id="sku"
               value={sku}
               onChange={(e) => setSku(e.target.value)}
