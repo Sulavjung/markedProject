@@ -6,30 +6,45 @@ import NoMatch from "./pages/NoMatch";
 import Dashboard from "./pages/Dashboard";
 import Empty from "./pages/Empty";
 import Sample from "./pages/Sample";
+import Documentation from "./pages/Documentation";
+import DocumentationLayout from "./components/layouts/DocumentationLayout";
 
-export const router = createBrowserRouter([
+export const router = createBrowserRouter(
+  [
     {
-        path: "/",
-        element: <Applayout />,
-        children: [
+      path: "/",
+      element: <Applayout />,
+      children: [
+        {
+          path: "",
+          element: <Dashboard />,
+        },
+        {
+          path: "documentation",
+          element: <DocumentationLayout />,
+          children: [
             {
-                path: "",
-                element: <Dashboard />,
+              path: "",
+              element: <Documentation />,
             },
             {
-                path: "sample",
-                element: <Sample />,
+              path: "sample",
+              element: <Sample />,
             },
-            {
-                path: "empty",
-                element: <Empty />,
-            },
-        ],
+          ],
+        },
+        {
+          path: "empty",
+          element: <Empty />,
+        },
+      ],
     },
     {
-        path: "*",
-        element: <NoMatch />,
+      path: "*",
+      element: <NoMatch />,
     },
-], {
-    basename: global.basename
-})
+  ],
+  {
+    basename: global.basename,
+  }
+);

@@ -1,16 +1,8 @@
 import Labels from "@/components/labels";
 import { PageHeader, PageHeaderHeading } from "@/components/page-header";
 import MyForm from "@/components/setting-form";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
