@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Item 1",
+    "sku": "SKU001",
+    "price": "19.99",
+    "size": "Medium"
+  },
+  {
+    "name": "Item 2",
+    "sku": "SKU002",
+    "price": "29.99",
+    "size": "Large"
+  },
+  {
+    "name": "Item 3",
+    "sku": "SKU003",
+    "price": "9.99",
+    "size": "Small"
+  },
+  {
+    "name": "Item 4",
+    "sku": "SKU004",
+    "price": "15.49",
+    "size": "Medium"
+  },
+  {
+    "name": "Item 5",
+    "sku": "SKU005",
+    "price": "25.00",
+    "size": "Large"
+  }
+]

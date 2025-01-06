@@ -1,0 +1,53 @@
+{
+  "name": "label-creator",
+  "private": true,
+  "version": "0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.9.1",
+    "@radix-ui/react-accordion": "^1.1.2",
+    "@radix-ui/react-avatar": "^1.0.4",
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-dropdown-menu": "^2.0.6",
+    "@radix-ui/react-icons": "^1.3.0",
+    "@radix-ui/react-label": "^2.1.1",
+    "@radix-ui/react-scroll-area": "^1.0.5",
+    "@radix-ui/react-select": "^2.1.4",
+    "@radix-ui/react-slot": "^1.1.1",
+    "@radix-ui/react-switch": "^1.1.2",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "core-js": "^3.39.0",
+    "html2canvas": "^1.4.1",
+    "jsbarcode": "^3.11.6",
+    "jspdf": "^2.5.2",
+    "lucide-react": "^0.469.0",
+    "react": "^18.2.0",
+    "react-barcode": "^1.5.3",
+    "react-dom": "^18.2.0",
+    "react-dropzone": "^14.3.5",
+    "react-hook-form": "^7.54.2",
+    "react-router-dom": "^6.16.0",
+    "react-wrap-balancer": "^1.1.0",
+    "sonner": "^1.7.1",
+    "tailwind-merge": "^1.14.0",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.4",
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.3",
+    "typescript": "^4.6.4",
+    "vite": "^6.0.7"
+  }
+}
