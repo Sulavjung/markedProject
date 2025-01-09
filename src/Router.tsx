@@ -8,7 +8,7 @@ import Empty from "./pages/Empty";
 import React, { useState, useEffect } from "react";
 
 // Dynamically import Markdown files
-const markdownModules = import.meta.glob("/src/docs/*.md", {
+const markdownModules = import.meta.glob("../src/docs/*.md", {
   eager: true,
   query: "?raw",
   import: "default",

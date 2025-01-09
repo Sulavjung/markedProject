@@ -9,7 +9,7 @@ export default defineConfig(({ command }) => {
   const isProd = command === "build";
 
   return {
-    base: isProd ? "" : "./",
+    base: isProd ? "/" : "/",
     plugins: [
       react(),
       mdPlugin({
@@ -23,7 +23,16 @@ export default defineConfig(({ command }) => {
     },
     define: {
       global: {
-        basename: "",
+        basename: "/",
+      },
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          assetFileNames: "assets/[name]-[hash][extname]", // Customize file naming
+          entryFileNames: "assets/[name]-[hash].js",
+          chunkFileNames: "assets/[name]-[hash].js",
+        },
       },
     },
   };
