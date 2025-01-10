@@ -1,9 +1,16 @@
-import { FileText, Upload, Search, Tag, AlertCircle } from "lucide-react";
+import {
+  FileText,
+  Upload,
+  Search,
+  Tag,
+  AlertCircle,
+  Barcode,
+} from "lucide-react";
 
 interface SidebarItem {
   title: string;
   url: string;
-  icon: React.ComponentType;
+  icon: React.ElementType;
 }
 
 interface SidebarGroup {
@@ -39,6 +46,16 @@ export const sidebarConfig: SidebarGroup[] = [
         title: "Troubleshooting",
         url: "/documentation/troubleshooting",
         icon: AlertCircle,
+      },
+    ],
+  },
+  {
+    name: "Examples",
+    items: [
+      {
+        title: "Use Case 1",
+        url: "/documentation/use-case-1",
+        icon: Barcode,
       },
     ],
   },
