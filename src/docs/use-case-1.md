@@ -1,4 +1,4 @@
-# Documentation: Use Case 1 - Label Creator Application
+# Label Creator Application
 
 ---
 
