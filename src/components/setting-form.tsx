@@ -30,6 +30,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { useDispatch } from "react-redux";
+import { updateProduct, updateSetting } from "@/store/slices/exampleSlices";
 
 const formSchema = z.object({
   data: z.array(z.instanceof(File)),
@@ -51,6 +53,7 @@ type MyFormProps = {
 export default function MyForm({ setSetting }: MyFormProps) {
   const [files, setFiles] = useState<File[] | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
+  const dispatch = useDispatch();
 
   const dropZoneConfig = {
     maxFiles: 1,
@@ -69,6 +72,10 @@ export default function MyForm({ setSetting }: MyFormProps) {
       reader.onload = () => {
         try {
           const parsedData = JSON.parse(reader.result as string);
+
+          console.log("Parsed data: ", parsedData);
+
+          dispatch(updateProduct(parsedData));
 
           // Assuming the JSON is an array of objects and columns are keys of the first object
           if (Array.isArray(parsedData) && parsedData.length > 0) {
@@ -91,13 +98,14 @@ export default function MyForm({ setSetting }: MyFormProps) {
       };
 
       reader.readAsText(file);
-      console.log("Columns: ", columns);
     }
   }, [files]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      console.log(values);
+      console.log("Setting", values);
+      const { data, ...setting } = values;
+      dispatch(updateSetting(setting));
       setSetting(values);
     } catch (error) {
       console.error("Form submission error", error);

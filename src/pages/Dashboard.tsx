@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 type SettingType = {
   data?: File[];
@@ -118,6 +119,7 @@ export default function Dashboard() {
 
   return (
     <>
+      <SidebarTrigger />
       <PageHeader>
         <PageHeaderHeading>Dashboard</PageHeaderHeading>
       </PageHeader>
