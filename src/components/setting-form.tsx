@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -30,8 +29,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { useDispatch } from "react-redux";
-import { updateProduct, updateSetting } from "@/store/slices/exampleSlices";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  ExampleState,
+  selectState,
+  updateProduct,
+  updateSetting,
+} from "@/store/slices/exampleSlices";
+import { Label } from "./ui/label";
 
 const formSchema = z.object({
   data: z.array(z.instanceof(File)),
@@ -46,14 +51,12 @@ const formSchema = z.object({
   whichCPrice: z.string(),
 });
 
-type MyFormProps = {
-  setSetting: (value: any) => void; // Replace `any` with the actual type
-};
-
-export default function MyForm({ setSetting }: MyFormProps) {
+export default function MyForm() {
   const [files, setFiles] = useState<File[] | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
   const dispatch = useDispatch();
+
+  const state: ExampleState = useSelector(selectState);
 
   const dropZoneConfig = {
     maxFiles: 1,
@@ -72,8 +75,6 @@ export default function MyForm({ setSetting }: MyFormProps) {
       reader.onload = () => {
         try {
           const parsedData = JSON.parse(reader.result as string);
-
-          console.log("Parsed data: ", parsedData);
 
           dispatch(updateProduct(parsedData));
 
@@ -103,10 +104,13 @@ export default function MyForm({ setSetting }: MyFormProps) {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      console.log("Setting", values);
+      //Extract setting only.
       const { data, ...setting } = values;
-      dispatch(updateSetting(setting));
-      setSetting(values);
+
+      //Add is Submitted to true as well.
+      const fullData = { ...setting, isSubmitted: true };
+
+      dispatch(updateSetting(fullData));
     } catch (error) {
       console.error("Form submission error", error);
       toast.error("Failed to submit the form. Please try again.");
@@ -149,7 +153,7 @@ export default function MyForm({ setSetting }: MyFormProps) {
                             &nbsp; or drag and drop
                           </p>
                           <p className="text-xs text-gray-500 dark:text-gray-400">
-                            CSV or JSON
+                          JSON
                           </p>
                         </div>
                       </FileInput>
@@ -167,7 +171,15 @@ export default function MyForm({ setSetting }: MyFormProps) {
                   )}
                 />
               </FormControl>
-              <FormDescription>Select a file to upload.</FormDescription>
+              {state.isSubmitted === true ? (
+                <FormDescription>
+                  There is data stored from your last upload. Only if you want
+                  to update the inventory, upload .json file again.
+                </FormDescription>
+              ) : (
+                <FormDescription>Select a file to upload.</FormDescription>
+              )}
+
               <FormMessage />
             </FormItem>
           )}

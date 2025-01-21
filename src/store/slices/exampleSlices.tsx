@@ -1,4 +1,6 @@
+import { loadInitialState } from "@/utils/localStorage";
 import { createSlice } from "@reduxjs/toolkit";
+import { toast } from "sonner";
 
 // Define types for the state
 export interface Aile {
@@ -12,7 +14,16 @@ export interface Shelf {
   aile_id: string;
 }
 
-interface ExampleState {
+export interface Product {
+  id: string;
+  name: string;
+  price: string;
+  sku: string;
+  size: string;
+  shelf_id: string;
+}
+
+export interface ExampleState {
   products: any[]; // Define a proper type for your products
   identifierIs: string;
   showIdentifier: boolean;
@@ -23,12 +34,13 @@ interface ExampleState {
   whichCPrice: string;
   whichCSize: string;
   whichCQR: string;
-  toPrintItems: any[]; // Define the shape of your print items
+  toPrintItems: Product[]; // Define the shape of your print items
   ailes: Aile[];
   shelves: Shelf[];
+  isSubmitted: boolean;
 }
 
-const initialState: ExampleState = {
+const defaultState: ExampleState = {
   products: [], // Array of product objects
   identifierIs: "", // Stores which QR code is active or being used
   showIdentifier: true, // Fixed typo in variable name
@@ -40,9 +52,16 @@ const initialState: ExampleState = {
   whichCSize: "", // Stores the size of the category
   whichCQR: "", // Stores the QR code of the category
   toPrintItems: [], // Array of items to print, each containing product_id and shelves_id
-  ailes: [{ id: "1", name: "Aile 1" }], // Array of aisles, each containing aisle_id and name
-  shelves: [{ id: "1", name: "1st", aile_id: "1" }], // Array of shelves, each containing shelves_id, name, and aisle_id
+  ailes: [{ id: "123456789", name: "Aile 1" }], // Array of aisles, each containing aisle_id and name
+  shelves: [{ id: "1", name: "1st", aile_id: "123456789" }], // Array of shelves, each containing shelves_id, name, and aisle_id
+  isSubmitted: false,
 };
+
+// Load the state from localStorage or fall back to defaultState
+const initialState: ExampleState = loadInitialState(
+  "exampleState",
+  defaultState
+);
 
 const exampleSlice = createSlice({
   name: "example",
@@ -50,7 +69,7 @@ const exampleSlice = createSlice({
   reducers: {
     // Updates the products list
     updateProduct: (state, action) => {
-      state.products = { ...state.products, ...action.payload };
+      state.products = [ ...state.products, ...action.payload ];
     },
 
     updateSetting: (state, action) => {
@@ -67,6 +86,7 @@ const exampleSlice = createSlice({
         whichCPrice,
         whichCSize,
         whichCQR,
+        isSubmitted,
       } = action.payload;
 
       // Update the corresponding state properties
@@ -79,6 +99,7 @@ const exampleSlice = createSlice({
       if (whichCPrice !== undefined) state.whichCPrice = whichCPrice;
       if (whichCSize !== undefined) state.whichCSize = whichCSize;
       if (whichCQR !== undefined) state.whichCQR = whichCQR;
+      if (isSubmitted) state.isSubmitted = isSubmitted;
     },
 
     // Toggles the visibility of identifiers
@@ -116,9 +137,45 @@ const exampleSlice = createSlice({
       state.whichCSize = action.payload;
     },
 
-    // Adds a new item to the `toPrintItems` list
+    // Adds a new item to the `toPrintItems` list given the sku and shelf id.
     addToPrintItem: (state, action) => {
-      state.toPrintItems.push(action.payload); // Payload should include `product_id` and `shelves_id`
+      const { sku, shelf_id } = action.payload;
+
+      // Filter the product that matches the given SKU and shelf ID
+      const matchedProduct = state.products.find((product) => {
+        console.log(product[state.whichCQR]);
+        return product[state.whichCQR] === sku;
+      });
+
+      if (matchedProduct) {
+        // Push to `toPrintItems` if the product matches and is not already in the list
+        const isAlreadyAdded = state.toPrintItems.some(
+          (item) => item.sku === matchedProduct[state.whichCQR] && item.shelf_id === shelf_id
+        );
+
+        if (!isAlreadyAdded) {
+          state.toPrintItems.push({
+            id: Date.now().toString(),
+            name: matchedProduct[state.whichCName],
+            price: matchedProduct[state.whichCPrice],
+            sku: matchedProduct[state.whichCQR],
+            size: matchedProduct[state.whichCSize],
+            shelf_id,
+          });
+          toast.success("Item added to print list.");
+          console.log("Item added to print list:", matchedProduct);
+        } else {
+          toast.success("Item already exists in the print list.");
+          console.log("Item already exists in the print list:", matchedProduct);
+        }
+      } else {
+        toast.error(
+          `No product found with SKU: ${sku} and shelf ID: ${shelf_id}`
+        );
+        console.error(
+          `No product found with SKU: ${sku} and shelf ID: ${shelf_id}`
+        );
+      }
     },
 
     // Updates the list of aisles
@@ -179,5 +236,16 @@ export const selectAiles = (state: { example: ExampleState }) =>
   state.example.ailes;
 export const selectShelves = (state: { example: ExampleState }) =>
   state.example.shelves;
+export const selectToPrintItems = (state: { example: ExampleState }) =>
+  state.example.toPrintItems;
+export const selectIsSubmitted = (state: { example: ExampleState }) =>
+  state.example.isSubmitted;
+export const selectSetting = (state: { example: ExampleState }) => ({
+  showName: state.example.showName,
+  showPrice: state.example.showPrice,
+  showSize: state.example.showSize,
+});
+
+export const selectState = (state: {example: ExampleState}) => (state.example)
 
 export default exampleSlice.reducer;
