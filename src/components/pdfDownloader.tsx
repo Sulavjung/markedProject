@@ -155,6 +155,8 @@ export default function PdfGenerator() {
           </Document>
         );
       }
+      default:
+        return <Document />;
     }
   };
 
