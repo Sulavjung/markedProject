@@ -6,6 +6,8 @@ import NoMatch from "./pages/NoMatch";
 import Dashboard from "./pages/Dashboard";
 import Empty from "./pages/Empty";
 import React, { useState, useEffect } from "react";
+import CreatorLayout from "./components/layouts/CreatorLayout";
+import AisleShelfDetails from "@/pages/AileShelfDetails";
 
 // Dynamically import Markdown files
 const markdownModules = import.meta.glob("../src/docs/*.md", {
@@ -58,12 +60,22 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <Dashboard />,
+        element: <CreatorLayout />,
+        children: [
+          {
+            path: "",
+            element: <Dashboard />,
+          },
+          {
+            path: "aile/:aisleId/shelf/:shelveId", 
+            element: <AisleShelfDetails />,
+          },
+        ],
       },
       {
         path: "documentation",
         element: <DocumentationLayout />,
-        children: documentationRoutes, // Inject Markdown routes here
+        children: documentationRoutes,
       },
       {
         path: "empty",
