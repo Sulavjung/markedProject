@@ -34,7 +34,7 @@ const AisleShelfDetails = () => {
   const shelf = shelves.find((shelf) => shelf.id === shelveId);
 
   return (
-    <div>
+    <div >
       <PageHeader>
         <PageHeaderHeading>{shelf?.name}</PageHeaderHeading>
         <PdfGenerator />

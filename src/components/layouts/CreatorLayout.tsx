@@ -6,7 +6,7 @@ export default function CreatorLayout() {
   return (
     <SidebarProvider>
       <CreatorSidebar />
-      <main>
+      <main className="w-full">
         <SidebarTrigger />
         <Outlet />
       </main>

@@ -10,9 +10,7 @@ import {
   pdf,
   View,
   Image,
-  PDFDownloadLink,
 } from "@react-pdf/renderer";
-import ReactPDF from "@react-pdf/renderer";
 import { useSelector } from "react-redux";
 import {
   selectSetting,
@@ -28,8 +26,29 @@ import {
   DialogDescription,
   DialogTitle,
 } from "./ui/dialog";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectLabel,
+  SelectItem,
+} from "./ui/select";
+import { useState } from "react";
+import { StandardPageSize } from "@react-pdf/types";
+import { FormLabel } from "./ui/form";
+import { Label } from "./ui/label";
+import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
+
+type Theme = {
+  id: string;
+  name: string;
+};
 
 export default function PdfGenerator() {
+  const [size, setSize] = useState<StandardPageSize>("A4");
+  const [theme, setTheme] = useState("DEFAULT");
   const { aileId, shelveId } = useParams();
   const toPrintItems = useSelector(selectToPrintItems);
   const setting = useSelector(selectSetting);
@@ -58,46 +77,93 @@ export default function PdfGenerator() {
   };
 
   const LabelPDF = () => {
-    return (
-      <Document>
-        <Page style={styles.body}>
-          <Text style={styles.header} fixed>
-            Created on labelcreator, a product by @sulav_hamal
-          </Text>
-          <View style={styles.page}>
-            {shelveRelatedItems.map((item) => (
-              <View style={styles.card} key={item.sku} wrap={false}>
-                <Text style={styles.cardTitle}>{item.name}</Text>
-                <View style={styles.cardContent}>
-                  <View style={[styles.barcodeWrapper, styles.contentWidth]}>
-                    {/* Generate and render the barcode image */}
-                    <Image
-                      src={generateBarcodeImage(item.sku)} // Use the generated barcode image (Base64)
-                      style={styles.barcodeImage}
-                    />
+    switch (theme) {
+      case "DEFAULT":
+        return (
+          <Document>
+            <Page style={styles.body} size={size}>
+              <Text style={styles.header} fixed>
+                Created on labelcreator, a product by @sulav_hamal
+              </Text>
+              <View style={styles.page}>
+                {shelveRelatedItems.map((item) => (
+                  <View style={styles.card} key={item.sku} wrap={false}>
+                    <Text style={styles.cardTitle}>{item.name}</Text>
+                    <View style={styles.cardContent}>
+                      <View
+                        style={[styles.barcodeWrapper, styles.contentWidth]}
+                      >
+                        {/* Generate and render the barcode image */}
+                        <Image
+                          src={generateBarcodeImage(item.sku)} // Use the generated barcode image (Base64)
+                          style={styles.barcodeImage}
+                        />
+                      </View>
+                      <View style={styles.verticalBar}></View>
+                      <View style={[styles.textWrapper, styles.contentWidth]}>
+                        {setting.showSize && (
+                          <Text style={styles.text}>Size: {item.size}</Text>
+                        )}
+                        {setting.showPrice && (
+                          <Text style={styles.price}>${item.price}</Text>
+                        )}
+                      </View>
+                    </View>
                   </View>
-                  <View style={styles.verticalBar}></View>
-                  <View style={[styles.textWrapper, styles.contentWidth]}>
-                    {setting.showSize && (
-                      <Text style={styles.text}>Size: {item.size}</Text>
-                    )}
-                    {setting.showPrice && (
-                      <Text style={styles.price}>${item.price}</Text>
-                    )}
-                  </View>
-                </View>
+                ))}
               </View>
-            ))}
-          </View>
-        </Page>
-      </Document>
-    );
+            </Page>
+          </Document>
+        );
+      case "YELLOW": {
+        return (
+          <Document>
+            <Page style={styles.body} size={size}>
+              <Text style={styles.header} fixed>
+                Created on labelcreator, a product by @sulav_hamal
+              </Text>
+              <View style={styles.page}>
+                {shelveRelatedItems.map((item) => (
+                  <View style={styles.card} key={item.sku} wrap={false}>
+                    <Text style={styles.cardTitle}>{item.name}</Text>
+                    <View style={styles.cardContent}>
+                      <View
+                        style={[styles.barcodeWrapper, styles.contentWidth]}
+                      >
+                        {/* Generate and render the barcode image */}
+                        <Image
+                          src={generateBarcodeImage(item.sku)} // Use the generated barcode image (Base64)
+                          style={styles.barcodeImage}
+                        />
+                      </View>
+                      <View style={styles.verticalBar}></View>
+                      <View style={[styles.textWrapper, styles.contentWidth]}>
+                        {setting.showSize && (
+                          <Text style={styles.text}>Size: {item.size}</Text>
+                        )}
+                        {setting.showPrice && (
+                          <Text style={[styles.price, styles.yellow]}>
+                            ${item.price}
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </Page>
+          </Document>
+        );
+      }
+    }
   };
 
   return (
     <>
       <Dialog>
-        <DialogTrigger><Share size={18} /></DialogTrigger>
+        <DialogTrigger>
+          <Share size={18} />
+        </DialogTrigger>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Review the .pdf file.</DialogTitle>
@@ -107,11 +173,53 @@ export default function PdfGenerator() {
             </DialogDescription>
           </DialogHeader>
 
-          <PDFViewer width={"100%"} height={"300px"} className="border rounded-md drop-shadow-lg">
+          {/* Selector to select the document size. */}
+          <div>
+            <Label>Document Size</Label>
+            <Select
+              onValueChange={(value) => setSize(value as StandardPageSize)}
+              defaultValue="LETTER"
+            >
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Select a Document Size" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Document Size</SelectLabel>
+                  {PAGE_SIZES.map((size) => (
+                    <SelectItem key={size} value={size}>
+                      {size}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label>Select Theme</Label>
+            <Tabs
+              defaultValue="DEFAULT"
+              className="w-100%"
+              onValueChange={(value) => setTheme(value)}
+            >
+              <TabsList className="grid w-full grid-cols-2">
+                {allThemes.map((theme) => (
+                  <TabsTrigger value={theme.id}>{theme.name}</TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+          </div>
+
+          <PDFViewer
+            width={"100%"}
+            height={"300px"}
+            className="border rounded-md drop-shadow-lg"
+          >
             <LabelPDF />
           </PDFViewer>
           <Button onClick={handleDownload}>
-             <span className="pe-4">Download</span> <Download size={15} />
+            <span className="pe-4">Download</span> <Download size={15} />
           </Button>
         </DialogContent>
       </Dialog>
@@ -217,5 +325,68 @@ const styles = StyleSheet.create({
     color: "black",
     textAlign: "right",
   },
+  yellow: {
+    backgroundColor: "yellow",
+  },
   barcodeImage: {},
 });
+
+// Page sizes for 72dpi. 72dpi is used internally by pdfkit.
+const PAGE_SIZES = [
+  "4A0",
+  "2A0",
+  "A0",
+  "A1",
+  "A2",
+  "A3",
+  "A4",
+  "A5",
+  "A6",
+  "A7",
+  "A8",
+  "A9",
+  "A10",
+  "B0",
+  "B1",
+  "B2",
+  "B3",
+  "B4",
+  "B5",
+  "B6",
+  "B7",
+  "B8",
+  "B9",
+  "B10",
+  "C0",
+  "C1",
+  "C2",
+  "C3",
+  "C4",
+  "C5",
+  "C6",
+  "C7",
+  "C8",
+  "C9",
+  "C10",
+  "RA0",
+  "RA1",
+  "RA2",
+  "RA3",
+  "RA4",
+  "SRA0",
+  "SRA1",
+  "SRA2",
+  "SRA3",
+  "SRA4",
+  "EXECUTIVE",
+  "FOLIO",
+  "LEGAL",
+  "LETTER",
+  "TABLOID",
+  "ID1",
+];
+
+const allThemes: Theme[] = [
+  { id: "DEFAULT", name: "Default" },
+  { id: "YELLOW", name: "Price Popper" },
+];
