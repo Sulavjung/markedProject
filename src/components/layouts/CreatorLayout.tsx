@@ -1,15 +1,24 @@
 import { Outlet } from "react-router-dom";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { CreatorSidebar } from "@/components/creator-sidebar";
+import Tabbar from "../Tabbar";
+import { Header } from "./Header";
 
 export default function CreatorLayout() {
+  
   return (
-    <SidebarProvider>
-      <CreatorSidebar />
-      <main className="w-full">
-        <SidebarTrigger />
-        <Outlet />
-      </main>
-    </SidebarProvider>
+    <>
+      
+      <Header />
+        <SidebarProvider >
+        
+          <CreatorSidebar />
+
+          <main className="px-2 px-sm-0 w-full" >
+            <Tabbar />
+            <Outlet />
+          </main>
+        </SidebarProvider>
+    </>
   );
 }

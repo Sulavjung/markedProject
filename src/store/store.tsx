@@ -9,7 +9,7 @@ const store = configureStore({
 });
 
 store.subscribe(() => {
-  saveState("exampleState", store.getState().example);
+  saveState("register", store.getState().example);
 });
 
 export default store;

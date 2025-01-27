@@ -1,3 +1,8 @@
+import { Home } from "lucide-react";
+import { Tab } from "./interfaces";
+import Register from "@/pages/Register";
+
+
 interface AppConfig {
   name: string;
   github: {
@@ -24,7 +29,7 @@ interface AppConfig {
 }
 
 export const appConfig: AppConfig = {
-  name: "Label Creator",
+  name: "Sulav Tools",
   github: {
     title: "React Shadcn Starter",
     url: "https://github.com/sulavJung",
@@ -47,3 +52,34 @@ export const appConfig: AppConfig = {
     url: "https://sulavhamal.com/",
   },
 };
+
+export const tabConfig: Tab[] = [
+  {
+    id: "home",
+    name: "Home",
+    icon: "house",
+    href: "/app/home",
+    element: Register,
+  },
+  {
+    id: "price",
+    name: "Price",
+    icon: "hand-coins",
+    href: "/app/price",
+    element: Register,
+  }, 
+  {
+    id: "restate",
+    name: "Restate",
+    icon: "building-2",
+    href: "/app/restate",
+    element: Register,
+  },
+  {
+    id: "sales",
+    name: "Sales",
+    icon: "percent",
+    href: "/app/sales",
+    element: Register,
+  },
+]

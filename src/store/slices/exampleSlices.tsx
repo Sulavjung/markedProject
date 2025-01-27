@@ -1,29 +1,16 @@
+import { Bills, registerConfig } from "@/pages/Register";
 import { loadInitialState } from "@/utils/localStorage";
 import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
 
 // Define types for the state
-export interface Aile {
-  id: string;
-  name: string;
+export interface App {
+  register: registerConfig[],
 }
 
-export interface Shelf {
-  id: string;
-  name: string;
-  aile_id: string;
-}
 
-export interface Product {
-  id: string;
-  name: string;
-  price: string;
-  sku: string;
-  size: string;
-  shelf_id: string;
-}
 
-export interface ExampleState {
+/* export interface ExampleState {
   products: any[]; // Define a proper type for your products
   identifierIs: string;
   showIdentifier: boolean;
@@ -38,36 +25,276 @@ export interface ExampleState {
   ailes: Aile[];
   shelves: Shelf[];
   isSubmitted: boolean;
+} */
+
+const defaultAppState: App = {
+  register: [{
+    date: '1-22-2025',
+    startingBalance: 0,
+    bills: [
+      {
+        id: 'penny',
+        name: 'Penny',
+        value: 0.01,
+        quantity: 6
+      },
+      {
+        id: 'nickel',
+        name: 'Nickel',
+        value: 0.05,
+        quantity: 6
+      },
+      {
+        id: 'dime',
+        name: 'Dime',
+        value: 0.1,
+        quantity: 7
+      },
+      {
+        id: 'quarter',
+        name: 'Quarter',
+        value: 0.25,
+        quantity: 7
+      },
+      {
+        id: 'half_dollar',
+        name: 'Half Dollar',
+        value: 0.5,
+        quantity: 32
+      },
+      {
+        id: 'one_dollar',
+        name: 'One Dollar',
+        value: 1,
+        quantity: 10
+      },
+      {
+        id: 'five_dollars',
+        name: 'Five Dollars',
+        value: 5,
+        quantity: 8
+      },
+      {
+        id: 'ten_dollars',
+        name: 'Ten Dollars',
+        value: 10,
+        quantity: 8
+      },
+      {
+        id: 'twenty_dollars',
+        name: 'Twenty Dollars',
+        value: 20,
+        quantity: 6
+      },
+      {
+        id: 'fifty_dollars',
+        name: 'Fifty Dollars',
+        value: 50,
+        quantity: 5
+      },
+      {
+        id: 'hundred_dollars',
+        name: 'Hundred Dollars',
+        value: 100,
+        quantity: 6
+      }
+    ],
+    expectedDeposit: 2000,
+    grossSale: 1000000,
+    scratcher: 20000
+  },
+  {
+    date: '1-23-2025',
+    startingBalance: 0,
+    bills: [
+      {
+        id: 'penny',
+        name: 'Penny',
+        value: 0.01,
+        quantity: 0
+      },
+      {
+        id: 'nickel',
+        name: 'Nickel',
+        value: 0.05,
+        quantity: 0
+      },
+      {
+        id: 'dime',
+        name: 'Dime',
+        value: 0.1,
+        quantity: 0
+      },
+      {
+        id: 'quarter',
+        name: 'Quarter',
+        value: 0.25,
+        quantity: 0
+      },
+      {
+        id: 'half_dollar',
+        name: 'Half Dollar',
+        value: 0.5,
+        quantity: 32
+      },
+      {
+        id: 'one_dollar',
+        name: 'One Dollar',
+        value: 1,
+        quantity: 0
+      },
+      {
+        id: 'five_dollars',
+        name: 'Five Dollars',
+        value: 5,
+        quantity: 0
+      },
+      {
+        id: 'ten_dollars',
+        name: 'Ten Dollars',
+        value: 10,
+        quantity: 0
+      },
+      {
+        id: 'twenty_dollars',
+        name: 'Twenty Dollars',
+        value: 20,
+        quantity: 0
+      },
+      {
+        id: 'fifty_dollars',
+        name: 'Fifty Dollars',
+        value: 50,
+        quantity: 0
+      },
+      {
+        id: 'hundred_dollars',
+        name: 'Hundred Dollars',
+        value: 100,
+        quantity: 0
+      }
+    ],
+    expectedDeposit: 0,
+    grossSale: 1000000,
+    scratcher: 0
+  },{
+    date: '1-26-2025',
+    startingBalance: 0,
+    bills: [
+      {
+        id: 'penny',
+        name: 'Penny',
+        value: 0.01,
+        quantity: 0
+      },
+      {
+        id: 'nickel',
+        name: 'Nickel',
+        value: 0.05,
+        quantity: 0
+      },
+      {
+        id: 'dime',
+        name: 'Dime',
+        value: 0.1,
+        quantity: 0
+      },
+      {
+        id: 'quarter',
+        name: 'Quarter',
+        value: 0.25,
+        quantity: 0
+      },
+      {
+        id: 'half_dollar',
+        name: 'Half Dollar',
+        value: 0.5,
+        quantity: 32
+      },
+      {
+        id: 'one_dollar',
+        name: 'One Dollar',
+        value: 1,
+        quantity: 0
+      },
+      {
+        id: 'five_dollars',
+        name: 'Five Dollars',
+        value: 5,
+        quantity: 0
+      },
+      {
+        id: 'ten_dollars',
+        name: 'Ten Dollars',
+        value: 10,
+        quantity: 0
+      },
+      {
+        id: 'twenty_dollars',
+        name: 'Twenty Dollars',
+        value: 20,
+        quantity: 0
+      },
+      {
+        id: 'fifty_dollars',
+        name: 'Fifty Dollars',
+        value: 50,
+        quantity: 0
+      },
+      {
+        id: 'hundred_dollars',
+        name: 'Hundred Dollars',
+        value: 100,
+        quantity: 0
+      }
+    ],
+    expectedDeposit: 0,
+    grossSale: 0,
+    scratcher: 0
+  }]
 }
 
-const defaultState: ExampleState = {
-  products: [], // Array of product objects
-  identifierIs: "", // Stores which QR code is active or being used
-  showIdentifier: true, // Fixed typo in variable name
-  showName: true,
-  showPrice: true,
-  showSize: true,
-  whichCName: "", // Stores the name of the category
-  whichCPrice: "", // Stores the price of the category
-  whichCSize: "", // Stores the size of the category
-  whichCQR: "", // Stores the QR code of the category
-  toPrintItems: [], // Array of items to print, each containing product_id and shelves_id
-  ailes: [{ id: "123456789", name: "Aile 1" }], // Array of aisles, each containing aisle_id and name
-  shelves: [{ id: "1", name: "1st", aile_id: "123456789" }], // Array of shelves, each containing shelves_id, name, and aisle_id
-  isSubmitted: false,
-};
 
 // Load the state from localStorage or fall back to defaultState
-const initialState: ExampleState = loadInitialState(
-  "exampleState",
-  defaultState
+const initialState: App = loadInitialState(
+  "register",
+  defaultAppState
 );
 
 const exampleSlice = createSlice({
-  name: "example",
+  name: "App",
   initialState,
   reducers: {
-    // Updates the products list
+
+    updateRegisterData: (state, action) => {
+      const { date, startingBalance, bills, expectedDeposit, grossSale, scratcher } = action.payload;
+    
+      // Check if a register entry for the date already exists
+      const existingIndex = state.register.findIndex((entry) => entry.date === date);
+    
+      if (existingIndex !== -1) {
+        // If an entry already exists for this date, update it
+        state.register[existingIndex] = {
+          date,
+          startingBalance,
+          bills,
+          expectedDeposit,
+          grossSale,
+          scratcher,
+        };
+      } else {
+        // If no entry exists, add a new one
+        state.register.push({
+          date,
+          startingBalance,
+          bills,
+          expectedDeposit,
+          grossSale,
+          scratcher,
+        });
+      }
+    },
+    /* // Updates the products list
     updateProduct: (state, action) => {
       state.products = [ ...state.products, ...action.payload ];
     },
@@ -208,12 +435,12 @@ const exampleSlice = createSlice({
     // Clears all items from the `toPrintItems` list
     clearToPrintItems: (state) => {
       state.toPrintItems = [];
-    },
+    }, */
   },
 });
 
 export const {
-  updateProduct,
+  /* updateProduct,
   updateSetting,
   toggleIdentifier,
   toggleShowName,
@@ -228,24 +455,20 @@ export const {
   updateShelves,
   addShelf,
   deleteShelf,
-  clearToPrintItems,
+  clearToPrintItems, */
+  updateRegisterData
 } = exampleSlice.actions;
 
 // Selectors
-export const selectAiles = (state: { example: ExampleState }) =>
-  state.example.ailes;
-export const selectShelves = (state: { example: ExampleState }) =>
-  state.example.shelves;
-export const selectToPrintItems = (state: { example: ExampleState }) =>
-  state.example.toPrintItems;
-export const selectIsSubmitted = (state: { example: ExampleState }) =>
-  state.example.isSubmitted;
-export const selectSetting = (state: { example: ExampleState }) => ({
-  showName: state.example.showName,
-  showPrice: state.example.showPrice,
-  showSize: state.example.showSize,
-});
+export const selectToday = (state: { example: App }) => {
+  const register = state.example.register.find((day) => day.date === new Date().toLocaleDateString().replace(/\//g, "-"));
+  return register === undefined ?  { date: "", startingBalance: 0, bills: Bills, expectedDeposit: 0, grossSale: 0, scratcher: 0 } : register;
+};
 
-export const selectState = (state: {example: ExampleState}) => (state.example)
+export const selectRegisterData = (state: {example: App}) => {
+  return state.example.register;
+}
+
+/*export const selectState = (state: {example: ExampleState}) => (state.example) */
 
 export default exampleSlice.reducer;

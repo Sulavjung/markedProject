@@ -8,6 +8,8 @@ import Empty from "./pages/Empty";
 import React, { useState, useEffect } from "react";
 import CreatorLayout from "./components/layouts/CreatorLayout";
 import AisleShelfDetails from "@/pages/AileShelfDetails";
+import { tabConfig } from "./config/app";
+import Register from "./pages/Register";
 
 // Dynamically import Markdown files
 const markdownModules = import.meta.glob("../src/docs/*.md", {
@@ -52,26 +54,25 @@ const documentationRoutes = Object.keys(markdownModules).map((filePath) => {
 });
 console.log("Generated Documentation Routes:", documentationRoutes);
 
+const TabPages = ({ tabId }: { tabId: string }) => {
+  return <div>{tabId}</div>;
+};
+
+//Generate routes dynamically for tabs.
+const tabRoutes = tabConfig.map((tab) => {
+  const path = tab.href;
+  return {
+    path: path,
+    element: <tab.element />,
+  };
+});
+
 // Main router configuration
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <Applayout />,
     children: [
-      {
-        path: "",
-        element: <CreatorLayout />,
-        children: [
-          {
-            path: "",
-            element: <Dashboard />,
-          },
-          {
-            path: "aile/:aisleId/shelf/:shelveId", 
-            element: <AisleShelfDetails />,
-          },
-        ],
-      },
       {
         path: "documentation",
         element: <DocumentationLayout />,
@@ -80,6 +81,18 @@ export const router = createBrowserRouter([
       {
         path: "empty",
         element: <Empty />,
+      },
+    ],
+  },
+
+  {
+    path: "/app",
+    element: <CreatorLayout />,
+    children: [
+      ...tabRoutes,
+      {
+        path: "register/:dateId",
+        element: <Register />,
       },
     ],
   },

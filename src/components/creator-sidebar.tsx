@@ -1,9 +1,4 @@
-import {
-  deleteShelf,
-  selectAiles,
-  selectIsSubmitted,
-  selectShelves,
-} from "@/store/slices/exampleSlices";
+
 import { RootState } from "@/store/store";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -21,29 +16,32 @@ import {
 } from "./ui/sidebar";
 import { Button } from "./ui/button";
 import { ChevronRight, Settings, SquareStack, Trash2 } from "lucide-react";
-import { AddAiles } from "./add-aile";
 import { AddShelf } from "./add-shelf";
 import { Collapsible, CollapsibleContent } from "./ui/collapsible";
 import { CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigation, useParams } from "react-router-dom";
 import AilesContextMenu from "./ailes-contextMenu";
+import { tabConfig } from "@/config/app";
+import { Icon } from "./Tabbar";
+import { Tab } from "@/config/interfaces";
 
 export function CreatorSidebar() {
   const { aileId, shelveId } = useParams();
   const location = useLocation();
   const dispatch = useDispatch();
+  const navigate = useNavigation();
 
   // Fetch ailes and shelves from the Redux state using selectors
-  const ailes = useSelector((state: RootState) => selectAiles(state));
+  /* const ailes = useSelector((state: RootState) => selectAiles(state));
   const shelves = useSelector((state: RootState) => selectShelves(state));
   const isSubmitted = useSelector((state: RootState) =>
     selectIsSubmitted(state)
-  );
+  ); */
 
   const isActive = (url: string) => location.pathname.toString() === url;
 
   return (
-    <Sidebar className="sulav">
+    <Sidebar variant="sidebar">
       <SidebarContent>
         <SidebarGroup className="mt-12">
           <SidebarGroupLabel>Setup</SidebarGroupLabel>
@@ -56,38 +54,39 @@ export function CreatorSidebar() {
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
-        {isSubmitted && (
+        
           <SidebarGroup>
-            <SidebarGroupLabel>Ailes</SidebarGroupLabel>
+            <SidebarGroupLabel>Services</SidebarGroupLabel>
             <SidebarMenu>
-              {ailes.map((aile) => (
+              {tabConfig.map((tab: Tab) => (
                 <Collapsible
-                  key={aile.id}
+                  key={tab.id}
                   asChild
                   defaultOpen={true}
                   className="group/collapsible"
                 >
                   <SidebarMenuItem>
-                  <AilesContextMenu>
-                    <SidebarMenuButton
-                      tooltip={aile.name}
-                      isActive={location.pathname.includes(aile.id)}
-                    >
-                      
+                    <AilesContextMenu>
+                      <SidebarMenuButton
+                        tooltip={tab.name}
+                        isActive={location.pathname.includes(tab.id)}
+                      >
                         <>
-                        <SquareStack color="blue" /> <span>{aile.name}</span>
-                        <AddShelf aileNumber={aile.id} className="ml-auto" />
-                        <CollapsibleTrigger asChild>
-                          <ChevronRight className=" transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                        </CollapsibleTrigger>
+                          <Link to={tab.href} className="flex items-center">
+                            <Icon size={16} name={tab.icon} /> <span className="ps-2">{tab.name}</span>
+                          </Link>
+
+                          {/* <AddShelf aileNumber={aile.id} className="ml-auto" /> */}
+                          <CollapsibleTrigger asChild className="ml-auto">
+                            <ChevronRight className=" transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                          </CollapsibleTrigger>
                         </>
-                      
-                    </SidebarMenuButton>
+                      </SidebarMenuButton>
                     </AilesContextMenu>
 
                     <CollapsibleContent>
                       <SidebarMenuSub>
-                        {shelves
+                        {/* {shelves
                           .filter((shelf) => aile.id === shelf.aile_id)
                           .map((shelf) => (
                             <SidebarMenuSubItem key={shelf.id}>
@@ -111,7 +110,7 @@ export function CreatorSidebar() {
                                 </Link>
                               </SidebarMenuButton>
                             </SidebarMenuSubItem>
-                          ))}
+                          ))} */}
                       </SidebarMenuSub>
                     </CollapsibleContent>
                   </SidebarMenuItem>
@@ -119,10 +118,9 @@ export function CreatorSidebar() {
               ))}
             </SidebarMenu>
           </SidebarGroup>
-        )}
       </SidebarContent>
       <SidebarFooter>
-        <AddAiles className="pt-4" />
+        
       </SidebarFooter>
     </Sidebar>
   );
