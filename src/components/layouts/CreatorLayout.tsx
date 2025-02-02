@@ -15,6 +15,7 @@ export default function CreatorLayout() {
           <CreatorSidebar />
 
           <main className="px-2 px-sm-0 w-full" >
+            <SidebarTrigger />
             <Tabbar />
             <Outlet />
           </main>

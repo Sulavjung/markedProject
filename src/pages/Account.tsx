@@ -1,3 +1,4 @@
+import AddBatchTransactions from "@/components/AddBatchTransactions";
 import AddTransaction from "@/components/AddTransaction";
 import { Icons } from "@/components/icons";
 import { PageHeader, PageHeaderHeading } from "@/components/page-header";
@@ -41,6 +42,13 @@ const chartConfig: ChartConfig = {
   },
 };
 
+const transactionConfig: ChartConfig = {
+  transactionAmount: {
+    label: "Transaction",
+    color: "orange",
+  }
+}
+
 function AccountPage() {
   const { accountId } = useParams();
 
@@ -63,11 +71,15 @@ function AccountPage() {
               <div className="flex flex-row justify-between ">
                 <div>{account.name}</div>
 
+                <div className="flex flex-row gap-2">
                 <AddTransaction />
+                <AddBatchTransactions />
+                </div>
               </div>
             </PageHeaderHeading>
           </PageHeader>
-          <Card className="mb-4">
+          <div className="flex flex-col items-stretch sm:flex-row gap-4 ">
+          <Card className="mb-4 flex flex-1 flex-col">
             <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
               <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
                 <CardTitle>Balance</CardTitle>
@@ -127,6 +139,43 @@ function AccountPage() {
               </ChartContainer>
             </CardContent>
           </Card>
+          <Card className="mb-4 flex flex-1 flex-col">
+            <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
+              <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
+                <CardTitle>Transactions Each Day</CardTitle>
+                <CardDescription>
+                  Your transactions over each day.
+                </CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer
+                config={transactionConfig}
+                className="min-h-[100px] w-full max-h-[300px]"
+              >
+              <BarChart
+                accessibilityLayer
+                data={bankAccount.getDailyTransactions()}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="date"
+                  tickLine={true}
+                  tickMargin={10}
+                  axisLine={false}
+                  tickFormatter={(value) => value}
+                />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Bar
+                  dataKey="transactionAmount"
+                  fill="orange"
+                  radius={4}
+                />
+              </BarChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+          </div>
           <Card>
             <CardHeader>
               <CardTitle>Transactions</CardTitle>
@@ -248,5 +297,21 @@ class BankAccount {
     });
 
     return dailyBalances;
+  }
+
+
+  getDailyTransactions(){
+    const dailyTransactions: {date: string; transactionAmount: number}[] = [];
+
+    this.transactions.forEach((transaction) => {
+      dailyTransactions.push({ 
+        date: new Date(transaction.date).toDateString(), 
+        transactionAmount: transaction.type === "deposit" ? transaction.amount : -transaction.amount 
+      }); //if withdraw, show -ve, if deposit show +ve
+    })
+
+    console.log(dailyTransactions);
+
+    return dailyTransactions;
   }
 }

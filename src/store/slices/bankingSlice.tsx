@@ -293,10 +293,29 @@ const initialState: Banking = loadInitialState("Finance", defaultBankingState);
 const financeSlice = createSlice({
   name: "Finance",
   initialState: initialState,
-  reducers: {},
+  reducers: {
+    addAccountTransaction: (state, action) => {
+      state.accountTransactions.push(action.payload);
+
+      const account = state.bankAccounts.find((account) => account.id === action.payload.account_id);
+      if (account) {
+        if (action.payload.type === "deposit") {
+          account.balance += action.payload.amount;
+        } else if (action.payload.type === "withdrawal") {
+          account.balance -= action.payload.amount;
+        }
+      }
+    }
+  },
 });
 
 export default financeSlice.reducer;
+
+export const {
+  addAccountTransaction
+} = financeSlice.actions
+
+
 // Selectors
 const selectAllBankingData = (state: { finance: Banking }) => state;
 export const selectBankAccounts = (state: { finance: Banking }) =>
