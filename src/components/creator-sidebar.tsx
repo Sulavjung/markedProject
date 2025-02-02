@@ -1,4 +1,3 @@
-
 import { RootState } from "@/store/store";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -21,9 +20,15 @@ import { Collapsible, CollapsibleContent } from "./ui/collapsible";
 import { CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Link, useLocation, useNavigation, useParams } from "react-router-dom";
 import AilesContextMenu from "./ailes-contextMenu";
-import { tabConfig } from "@/config/app";
+
 import { Icon } from "./Tabbar";
 import { Tab } from "@/config/interfaces";
+import {
+  selectBankAccounts,
+  selectInvestmentAccounts,
+} from "@/store/slices/bankingSlice";
+import Dashboard from "@/pages/Dashboard";
+import Register from "@/pages/Register";
 
 export function CreatorSidebar() {
   const { aileId, shelveId } = useParams();
@@ -31,6 +36,51 @@ export function CreatorSidebar() {
   const dispatch = useDispatch();
   const navigate = useNavigation();
 
+  const tabConfig: () => Tab[] = () => {
+    const bankAccounts = useSelector(selectBankAccounts);
+    const investmentAccounts = useSelector(selectInvestmentAccounts);
+
+    return [
+      {
+        id: "bankAccounts",
+        name: "Bank Accounts",
+        icon: "landmark",
+        href: "/app/account",
+        element: Dashboard,
+        children: bankAccounts.map((account) => ({
+          name: account.name,
+          id: account.id,
+        })),
+      },
+      {
+        id: "investmentAccounts",
+        name: "Investment Accounts",
+        icon: "component",
+        href: "/app/price",
+        element: Register,
+        children: investmentAccounts.map((investmentAccount) => ({
+          id: investmentAccount.id,
+          name: investmentAccount.name,
+        })),
+      },
+      {
+        id: "investmentEntities",
+        name: "Investment Entities",
+        icon: "store",
+        href: "/app/restate",
+        element: Register,
+      },
+      {
+        id: "sales",
+        name: "Sales",
+        icon: "percent",
+        href: "/app/sales",
+        element: Register,
+      },
+    ];
+  };
+
+  console.log(tabConfig());
   // Fetch ailes and shelves from the Redux state using selectors
   /* const ailes = useSelector((state: RootState) => selectAiles(state));
   const shelves = useSelector((state: RootState) => selectShelves(state));
@@ -39,7 +89,7 @@ export function CreatorSidebar() {
   ); */
 
   const isActive = (url: string) => location.pathname.toString() === url;
-
+  const { accountId } = useParams();
   return (
     <Sidebar variant="sidebar">
       <SidebarContent>
@@ -54,74 +104,66 @@ export function CreatorSidebar() {
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
-        
-          <SidebarGroup>
-            <SidebarGroupLabel>Services</SidebarGroupLabel>
-            <SidebarMenu>
-              {tabConfig.map((tab: Tab) => (
-                <Collapsible
-                  key={tab.id}
-                  asChild
-                  defaultOpen={true}
-                  className="group/collapsible"
-                >
-                  <SidebarMenuItem>
-                    <AilesContextMenu>
-                      <SidebarMenuButton
-                        tooltip={tab.name}
-                        isActive={location.pathname.includes(tab.id)}
-                      >
-                        <>
-                          <Link to={tab.href} className="flex items-center">
-                            <Icon size={16} name={tab.icon} /> <span className="ps-2">{tab.name}</span>
-                          </Link>
 
-                          {/* <AddShelf aileNumber={aile.id} className="ml-auto" /> */}
-                          <CollapsibleTrigger asChild className="ml-auto">
-                            <ChevronRight className=" transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                          </CollapsibleTrigger>
-                        </>
-                      </SidebarMenuButton>
-                    </AilesContextMenu>
+        <SidebarGroup>
+          <SidebarGroupLabel>Services</SidebarGroupLabel>
+          <SidebarMenu>
+            {tabConfig().map((tab: Tab) => (
+              <Collapsible
+                key={tab.id}
+                asChild
+                defaultOpen={true}
+                className="group/collapsible"
+              >
+                <SidebarMenuItem>
+                  <AilesContextMenu>
+                    <SidebarMenuButton
+                      tooltip={tab.name}
+                      isActive={location.pathname.toString().includes(tab.href)}
+                    >
+                      <>
+                        <Link to={tab.href} className="flex items-center">
+                          <Icon size={16} name={tab.icon} />{" "}
+                          <span className="ps-2">{tab.name}</span>
+                        </Link>
 
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        {/* {shelves
-                          .filter((shelf) => aile.id === shelf.aile_id)
-                          .map((shelf) => (
-                            <SidebarMenuSubItem key={shelf.id}>
-                              <SidebarMenuButton
-                                asChild
-                                isActive={isActive(
-                                  `/aile/${aile.id}/shelf/${shelf.id}`
-                                )}
-                              >
-                                <Link
-                                  className="flex flex-row justify-between"
-                                  to={`/aile/${aile.id}/shelf/${shelf.id}`}
-                                >
-                                  <span>{shelf.name}</span>
-                                  <Trash2
-                                    color="red"
-                                    onClick={() =>
-                                      dispatch(deleteShelf(shelf.id))
-                                    }
-                                  />
-                                </Link>
-                              </SidebarMenuButton>
-                            </SidebarMenuSubItem>
-                          ))} */}
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
-                  </SidebarMenuItem>
-                </Collapsible>
-              ))}
-            </SidebarMenu>
-          </SidebarGroup>
+                        {/* <AddShelf aileNumber={aile.id} className="ml-auto" /> */}
+                        <CollapsibleTrigger asChild className="ml-auto">
+                          <ChevronRight className=" transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                        </CollapsibleTrigger>
+                      </>
+                    </SidebarMenuButton>
+                  </AilesContextMenu>
+
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      {tab.children &&
+                        tab.children.map((subTab) => (
+                          <SidebarMenuSubItem key={subTab.id}>
+                            <SidebarMenuButton
+                              asChild
+                              isActive={
+                                accountId && accountId === subTab.id
+                                  ? true
+                                  : false
+                              }
+                            >
+                              <Link to={`${tab.href}/${subTab.id}`}>
+                                {" "}
+                                {subTab.name}
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuSubItem>
+                        ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
-        
-      </SidebarFooter>
+      <SidebarFooter></SidebarFooter>
     </Sidebar>
   );
 }

@@ -1,14 +1,14 @@
 import { Home } from "lucide-react";
 import { Tab } from "./interfaces";
 import Register from "@/pages/Register";
-
+import Dashboard from "@/pages/Dashboard";
 
 interface AppConfig {
   name: string;
   github: {
     title: string;
     url: string;
-    name: string
+    name: string;
   };
   author: {
     name: string;
@@ -33,7 +33,7 @@ export const appConfig: AppConfig = {
   github: {
     title: "React Shadcn Starter",
     url: "https://github.com/sulavJung",
-    name: "sulavJung"
+    name: "sulavJung",
   },
   author: {
     name: "Sulav",
@@ -55,23 +55,23 @@ export const appConfig: AppConfig = {
 
 export const tabConfig: Tab[] = [
   {
-    id: "home",
-    name: "Home",
-    icon: "house",
-    href: "/app/home",
+    id: "bankAccounts",
+    name: "Bank Accounts",
+    icon: "landmark",
+    href: "/app/account",
+    element: Dashboard,
+  },
+  {
+    id: "investmentAccounts",
+    name: "Investment Accounts",
+    icon: "component",
+    href: "/app/price",
     element: Register,
   },
   {
-    id: "price",
-    name: "Price",
-    icon: "hand-coins",
-    href: "/app/price",
-    element: Register,
-  }, 
-  {
-    id: "restate",
-    name: "Restate",
-    icon: "building-2",
+    id: "investmentEntities",
+    name: "Investment Entities",
+    icon: "store",
     href: "/app/restate",
     element: Register,
   },
@@ -82,4 +82,4 @@ export const tabConfig: Tab[] = [
     href: "/app/sales",
     element: Register,
   },
-]
+];

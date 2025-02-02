@@ -21,7 +21,7 @@ export const mainMenu: NavItemWithChildren[] = [
   },
   {
     title: "App",
-    to: "/app/home",
+    to: "/app/account",
   },
   /*  {
         title: 'Dropdown',

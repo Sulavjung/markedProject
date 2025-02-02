@@ -10,6 +10,8 @@ import CreatorLayout from "./components/layouts/CreatorLayout";
 import AisleShelfDetails from "@/pages/AileShelfDetails";
 import { tabConfig } from "./config/app";
 import Register from "./pages/Register";
+import Account from "./pages/Account";
+import AccountPage from "./pages/Account";
 
 // Dynamically import Markdown files
 const markdownModules = import.meta.glob("../src/docs/*.md", {
@@ -54,10 +56,6 @@ const documentationRoutes = Object.keys(markdownModules).map((filePath) => {
 });
 console.log("Generated Documentation Routes:", documentationRoutes);
 
-const TabPages = ({ tabId }: { tabId: string }) => {
-  return <div>{tabId}</div>;
-};
-
 //Generate routes dynamically for tabs.
 const tabRoutes = tabConfig.map((tab) => {
   const path = tab.href;
@@ -90,6 +88,10 @@ export const router = createBrowserRouter([
     element: <CreatorLayout />,
     children: [
       ...tabRoutes,
+      {
+        path: "/app/account/:accountId",
+        element: <AccountPage />,
+      },
       {
         path: "register/:dateId",
         element: <Register />,
