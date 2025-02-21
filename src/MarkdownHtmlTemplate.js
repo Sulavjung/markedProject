@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import marked from "marked";
+import {marked} from "marked";
+
 
 const MarkdownHtmlTemplate = () => {
   const [markdown, setMarkdown] = useState(`## Welcome to Markdown  
@@ -50,7 +51,7 @@ Happy coding! 🚀`);
 
   const parseMarkdown = () => {
     // Split the markdown content by the delimiter &&&&
-    return markdown.split("&&&&").map((md) => marked.marked(md.trim()));
+    return markdown.split("&&&&").map((md) => marked(md.trim()));
   };
 
   const generateHtml = () => {
