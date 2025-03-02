@@ -1,0 +1,371 @@
+/* import React, { Component, KeyboardEvent, useEffect, useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {
+  PageHeader,
+  PageHeaderDescription,
+  PageHeaderHeading,
+} from "@/components/page-header";
+import { Input } from "@/components/ui/input";
+import { marked } from "marked";
+
+// Interface for MarkdownBlock props and state
+interface MarkdownBlockProps {
+  id: string;
+  initialContent: string;
+  level?: number; // For HeadingBlock
+}
+
+interface MarkdownBlockState {
+  isEditing: boolean;
+  content: string;
+}
+
+// Abstract MarkdownBlock class
+abstract class MarkdownBlock extends Component<
+  MarkdownBlockProps,
+  MarkdownBlockState
+> {
+  constructor(props: MarkdownBlockProps) {
+    super(props);
+    this.state = {
+      isEditing: false,
+      content: props.initialContent,
+    };
+  }
+
+  // Common toggleEditing method
+  toggleEditing = () => {
+    this.setState({ isEditing: !this.state.isEditing });
+  };
+
+  // Abstract methods to be implemented by subclasses
+  abstract getMarkdownPrefix(): string;
+  abstract render(): JSX.Element;
+
+  toMarkdown(): string {
+    return this.state.content;
+  }
+
+  updateContent(newContent: string) {
+    this.setState({ content: newContent });
+  }
+}
+
+// HeadingBlock Component
+class HeadingBlock extends MarkdownBlock {
+  private level: number;
+
+  constructor(props: MarkdownBlockProps) {
+    super(props);
+    this.level = props.level || 1;
+  }
+
+  getMarkdownPrefix(): string {
+    return "#".repeat(this.level) + " ";
+  }
+
+  handleContentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newText = e.target.value;
+    this.setState({ content: `${newText}` });
+  };
+
+  handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      this.toggleEditing(); // Use inherited method
+    }
+  };
+
+  render(): JSX.Element {
+    const Tag = `h${this.level}` as keyof JSX.IntrinsicElements;
+    const text = this.state.content.replace(this.getMarkdownPrefix(), "");
+    const className = `text-${
+      6 - this.level + 1
+    }xl font-bold w-full bg-transparent border-b border-gray-300 focus:outline-none text-gray-700`;
+
+    return this.state.isEditing ? (
+      <input
+        type="text"
+        value={`${this.state.content}`}
+        onChange={this.handleContentChange}
+        onKeyDown={this.handleKeyDown}
+        onBlur={this.toggleEditing} // Use inherited method
+        className={className}
+        autoFocus
+      />
+    ) : (
+      <Tag
+        className={className.replace(
+          " border-b border-gray-300 focus:outline-none",
+          ""
+        )}
+        onClick={this.toggleEditing} // Use inherited method
+      >
+        {text}
+      </Tag>
+    );
+  }
+}
+
+// ListBlock Component
+class ListBlock extends MarkdownBlock {
+  constructor(props: MarkdownBlockProps) {
+    super(props);
+  }
+
+  getMarkdownPrefix(): string {
+    return "- ";
+  }
+
+  handleContentChange = (index: number, newValue: string) => {
+    const items = this.state.content.split("\n");
+    items[index] = `${this.getMarkdownPrefix()}${newValue}`;
+    this.setState({ content: items.join("\n") });
+  };
+
+  handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const items = this.state.content.split("\n");
+      items.splice(index + 1, 0, this.getMarkdownPrefix());
+      this.setState({ content: items.join("\n") });
+    }
+  };
+
+  render(): JSX.Element {
+    const items = this.state.content
+      .split("\n")
+      .filter(
+        (line) => line.trim().startsWith("-") || line.trim().startsWith("*")
+      );
+    const className = "w-full bg-transparent focus:outline-none text-gray-700";
+
+    return this.state.isEditing ? (
+      <ul className="list-disc pl-6">
+        {items.map((item, index) => (
+          <li key={index}>
+            <input
+              type="text"
+              value={item.slice(2).trim()}
+              onChange={(e) => this.handleContentChange(index, e.target.value)}
+              onKeyDown={(e) => this.handleKeyDown(e, index)}
+              onBlur={this.toggleEditing} // Use inherited method
+              className={className}
+              autoFocus={index === 0}
+            />
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <ul className="list-disc pl-6" onClick={this.toggleEditing}>
+        {items.map((item, index) => (
+          <li key={index} className="text-gray-700">
+            {item.slice(2).trim()}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+}
+
+// ParagraphBlock Component
+class ParagraphBlock extends MarkdownBlock {
+  constructor(props: MarkdownBlockProps) {
+    super(props);
+  }
+
+  getMarkdownPrefix(): string {
+    return "";
+  }
+
+  handleContentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ content: e.target.value });
+  };
+
+  handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      this.toggleEditing(); // Use inherited method
+    }
+  };
+
+  render(): JSX.Element {
+    const className = "text-gray-700 w-full bg-transparent focus:outline-none";
+
+    return this.state.isEditing ? (
+      <input
+        type="text"
+        value={`${this.getMarkdownPrefix()} ${this.state.content}`}
+        onChange={this.handleContentChange}
+        onKeyDown={this.handleKeyDown}
+        onBlur={this.toggleEditing} // Use inherited method
+        className={className}
+        autoFocus
+      />
+    ) : (
+      <p
+        className={className.replace(" focus:outline-none", "")}
+        onClick={this.toggleEditing} // Use inherited method
+      >
+        {this.state.content}
+      </p>
+    );
+  }
+}
+
+// BlockFactory Utility
+const BlockFactory = {
+  parseMarkdown(markdown: string): JSX.Element[] {
+    const lines = markdown.split("\n").filter((line) => line.trim().length > 0);
+    const blocks: JSX.Element[] = [];
+    let currentListContent = "";
+
+    lines.forEach((line, index) => {
+      const id = Math.random().toString(); // Replace with UUID if needed
+      if (line.startsWith("#")) {
+        const level = line.match(/^#+/)?.[0].length || 1;
+        if (level <= 6) {
+          if (currentListContent) {
+            blocks.push(
+              <ListBlock key={id} id={id} initialContent={currentListContent} />
+            );
+            currentListContent = "";
+          }
+          blocks.push(
+            <HeadingBlock
+              key={id}
+              id={id}
+              initialContent={line}
+              level={level}
+            />
+          );
+        } else {
+          blocks.push(
+            <ParagraphBlock key={id} id={id} initialContent={line} />
+          );
+        }
+      } else if (line.trim().startsWith("-") || line.trim().startsWith("*")) {
+        currentListContent += `${line}\n`;
+      } else {
+        if (currentListContent) {
+          blocks.push(
+            <ListBlock key={id} id={id} initialContent={currentListContent} />
+          );
+          currentListContent = "";
+        }
+        blocks.push(<ParagraphBlock key={id} id={id} initialContent={line} />);
+      }
+    });
+
+    if (currentListContent) {
+      blocks.push(
+        <ListBlock
+          key={Math.random().toString()}
+          id={Math.random().toString()}
+          initialContent={currentListContent}
+        />
+      );
+    }
+
+    return blocks;
+  },
+};
+
+// MarkdownEditor Component
+const MarkdownEditor: React.FC = () => {
+  const markdown = `
+# Welcome to Markdown Editor
+
+This is a simple editor for writing Markdown.
+
+## Features
+- Real-time preview of your Markdown.
+- Supports headings, lists, and paragraphs.
+- Easy-to-use interface for creators.
+
+### Things to Try
+- Write a heading with #, ##, or ###.
+- Create a list with - or *.
+- Type regular text for paragraphs.
+
+Enjoy experimenting with Markdown!
+  `;
+  const [blocks, setBlocks] = useState(BlockFactory.parseMarkdown(markdown));
+
+  return (
+    <div className="container px-0 md:px-8 bg-background min-h-screen">
+      <PageHeader>
+        <PageHeaderHeading>Markdown Editor</PageHeaderHeading>
+        <PageHeaderDescription>
+          Edit Markdown blocks directly in the preview with real-time updates.
+        </PageHeaderDescription>
+      </PageHeader>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Preview</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="p-4 border rounded-md bg-white min-h-[20rem] overflow-auto space-y-4">
+              {blocks.map((block) => (
+                <div key={block.props.id}>{block}</div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      <MarkdownInputBlock key="1" id="1" initialContent="# Heading" level={1} />
+    </div>
+  );
+};
+
+export default MarkdownEditor;
+
+export { MarkdownBlock, HeadingBlock, ListBlock, ParagraphBlock }; // Export for potential reuse
+
+const MarkdownInputBlock = () => {
+  const [input, setInput] = useState("");
+  const [style, setStyle] = useState({});
+  const [markdown, setMarkdown] = useState([]);
+
+  useEffect(() => {
+    if (input.startsWith("# ")) {
+      setStyle({ fontWeight: "bold", fontSize: "1.5rem" });
+    } else if (input.startsWith("## ")) {
+      setStyle({ fontWeight: "bold", fontSize: "1.25rem" });
+    } else if (input.startsWith("### ")) {
+      setStyle({ fontWeight: "bold", fontSize: "1rem" });
+    } else {
+      setStyle({});
+    }
+  }, [input]);
+
+  const onEnter = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // Prevents a new line in the Textarea
+      setMarkdown((prev) => [...prev, input]); // Append new input to the markdown array
+      setInput(""); // Clear input after adding to markdown content
+    }
+  };
+
+  return (
+    <div>
+      <div
+        className="prose md:prose-base prose-sm dark:prose-invert container"
+        dangerouslySetInnerHTML={{
+          __html: marked.parse(markdown.join("\n")),
+        }} // Properly joining with new lines
+      />
+      <Textarea
+        className="prose md:prose-base prose-sm dark:prose-invert container bg-none mb-[500px] shadow-none border-none"
+        style={style}
+        value={input}
+        placeholder="Enter Markdown..."
+        onKeyDown={onEnter}
+        onChange={(e) => setInput(e.target.value)}
+      />
+    </div>
+  );
+};
+ */

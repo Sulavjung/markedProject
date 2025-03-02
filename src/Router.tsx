@@ -3,15 +3,11 @@ import { Applayout } from "./components/layouts/AppLayout";
 import DocumentationLayout from "./components/layouts/DocumentationLayout";
 import ReactMarkdown from "react-markdown";
 import NoMatch from "./pages/NoMatch";
-import Dashboard from "./pages/Dashboard";
 import Empty from "./pages/Empty";
 import React, { useState, useEffect } from "react";
-import CreatorLayout from "./components/layouts/CreatorLayout";
-import AisleShelfDetails from "@/pages/AileShelfDetails";
-import { tabConfig } from "./config/app";
-import Register from "./pages/Register";
-import Account from "./pages/Account";
-import AccountPage from "./pages/Account";
+
+import LandingPage from "./pages/Sample";
+import Creator from "./pages/Creator";
 
 // Dynamically import Markdown files
 const markdownModules = import.meta.glob("../src/docs/*.md", {
@@ -37,7 +33,7 @@ function MarkdownPage({ filePath }: { filePath: string }) {
   }, [filePath]);
 
   return (
-    <article className="prose md:prose-base prose-sm dark:prose-invert">
+    <article className="container px-0 md:px-8  prose md:prose-base prose-sm dark:prose-invert">
       <br />
       <ReactMarkdown>{content}</ReactMarkdown>
     </article>
@@ -56,21 +52,24 @@ const documentationRoutes = Object.keys(markdownModules).map((filePath) => {
 });
 console.log("Generated Documentation Routes:", documentationRoutes);
 
-//Generate routes dynamically for tabs.
-const tabRoutes = tabConfig.map((tab) => {
-  const path = tab.href;
-  return {
-    path: path,
-    element: <tab.element />,
-  };
-});
-
 // Main router configuration
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <Applayout />,
     children: [
+      {
+        path: "/",
+        element: <LandingPage />,
+      },
+      /*       {
+        path: "/editor",
+        element: <MarkdownEditor />,
+      }, */
+      {
+        path: "/create",
+        element: <Creator />,
+      },
       {
         path: "documentation",
         element: <DocumentationLayout />,
@@ -79,22 +78,6 @@ export const router = createBrowserRouter([
       {
         path: "empty",
         element: <Empty />,
-      },
-    ],
-  },
-
-  {
-    path: "/app",
-    element: <CreatorLayout />,
-    children: [
-      ...tabRoutes,
-      {
-        path: "/app/account/:accountId",
-        element: <AccountPage />,
-      },
-      {
-        path: "register/:dateId",
-        element: <Register />,
       },
     ],
   },
