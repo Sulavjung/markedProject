@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 
+const SCALE = 1;
+
 type Template = {
   name: string;
   css: string;
@@ -235,8 +237,8 @@ const Creator: React.FC = () => {
       background: white;
       border-radius: 10px;
       box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-      width: 1080px; /* Instagram Post Width */
-      height: 1380px; /* Instagram Post Height */
+      width: 600px; /* Instagram Post Width */
+      height: 800px; /* Instagram Post Height */
       min-height: 400px;
       font-size: 24px;
       color: #333;

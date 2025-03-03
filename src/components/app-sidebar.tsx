@@ -17,7 +17,7 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar className="mt-12">
+    <Sidebar variant="floating" style={{ position: "absolute", top: "0" }}>
       <SidebarContent>
         {sidebarConfig.length > 0 &&
           sidebarConfig.map((group) => (

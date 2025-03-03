@@ -33,7 +33,7 @@ function MarkdownPage({ filePath }: { filePath: string }) {
   }, [filePath]);
 
   return (
-    <article className="container px-0 md:px-8  prose md:prose-base prose-sm dark:prose-invert">
+    <article className="  prose md:prose-xl prose-lg dark:prose-invert">
       <br />
       <ReactMarkdown>{content}</ReactMarkdown>
     </article>

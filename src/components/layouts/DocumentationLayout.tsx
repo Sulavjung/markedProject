@@ -4,12 +4,17 @@ import { Outlet } from "react-router-dom";
 
 export default function Layout() {
   return (
-    <SidebarProvider className="container ">
-      <AppSidebar />
-      <main>
-        <SidebarTrigger />
-        <Outlet />
-      </main>
-    </SidebarProvider>
+    <div className="container mx-auto px-2 md:px-6 overflow-hidden">
+      <SidebarProvider
+        className="px-2 md:px-6 w-full flex flex-row justify-center items-center"
+        style={{ overflow: "hidden", position: "relative" }}
+      >
+        <AppSidebar />
+        <main>
+          <SidebarTrigger />
+          <Outlet />
+        </main>
+      </SidebarProvider>
+    </div>
   );
 }
